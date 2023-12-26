@@ -1,0 +1,11 @@
+GET custom/_search
+    {
+      "query":
+      {
+        "range":
+        {
+          "point":
+          {
+            "gt":17.9,
+            "lte":66.1
+    }}}}

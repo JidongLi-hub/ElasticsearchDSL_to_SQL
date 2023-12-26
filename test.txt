@@ -1,0 +1,213 @@
+POST _bulk
+{ "delete" : { "_index" : "test", "_id" : "2" } }
+{ "create" : { "_index" : "test", "_id" : "3" } }
+{ "field1" : "value3" }
+{ "update" : {"_id" : "1", "_index" : "test"} }
+{ "doc" : {"field2" : "value2"} }
+
+POST custem/_bulk
+{ "update" : {"_id" : "1", "_index" : "test"} }
+{ "doc" : {"name" : "mike", "age":45, "weight":60.5} }
+
+POST custem/_bulk
+{ "delete" : { "_index" : "test", "_id" : "2" } }
+{ "delete" : { "_index" : "test", "_id" : "4" } }
+{ "delete" : { "_index" : "test", "_id" : "6" } }
+
+POST custem/_bulk
+{ "create" : { "_index" : "test", "_id" : "3" } }
+{ "name" : "Mike", "sex":"man", "age":15, "weight": 65.4 }
+{ "create" : { "_index" : "test", "_id" : "4" } }
+{ "name" : "Irving", "sex":"man", "age":31, "weight": 80.1 }
+{ "create" : { "_index" : "test", "_id" : "5" } }
+{ "name" : "John", "sex":"man", "age":28, "weight": 65 }
+{ "create" : { "_index" : "test", "_id" : "6" } }
+{ "name" : "Lisa", "sex":"woman", "age":35, "weight": 55.0 }
+
+PUT /myindex/_mapping
+{
+     "mappings":
+            {"properties":{
+                "doc_id":{
+                    "type":"boolean"
+                },
+                "doc_name":{
+                    "type":"text"
+                },
+                "doc_key":{
+                    "type":"integer"
+                },
+                "doc_create_time":{
+                    "type":"date"
+                }
+            }
+        }
+}
+PUT /myindex/
+{
+    "mappings":
+        {"properties":{
+            "doc_id":{
+                "type":"float"
+            },
+            "doc_name":{
+                "type":"text"
+            },
+            "doc_key":{
+                "type":"int"
+            },
+            "doc_create_time":{
+                "type":"date"
+            }
+        }
+    }
+}
+GET /hotel/_search
+{
+  "query": {
+    "match": {
+      "name": {"query": "速8","operator": "and"}
+    }
+  }
+}
+
+GET /indexName/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "TEXT",
+      "fields": ["FIELD1", "FIELD12"]
+    }
+  }
+}
+
+
+GET /analysis/_search
+{
+  "_source": {
+    "includes": ["blankKeyword","keyword","topicHitDetail"]
+  },
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "typeOfService": "转账"
+        }
+      }
+    }
+  },
+   "aggs": {
+       "count": { "value_count": { "field": "age" } },
+       "maxlevel": { "max": { "field": "level" } }
+     }
+}
+
+GET /analysis/_search
+{
+  "_source": {
+    "includes": ["fileName","starttime","duration","repNo","repGroup","typeOfService"],
+    "excludes": ["blankKeyword","keyword","topicHitDetail"]
+  },
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "typeOfService": "转账"
+        }
+      }
+    }
+  }
+}
+
+POST /company/_search
+{"query": {
+    "bool": {
+      "must": [
+        {}
+      ],
+      "must_not": [
+        {}
+      ],
+      "should": [
+        {"bool": {
+          "must": [
+            {"term": {
+              "callNumber": {
+                "value": "95533"
+              }
+            }}
+          ]
+        }}
+      ],
+      "filter": [
+        { "term": {
+          "typeOfService": "转账"
+          }
+        }
+      ]
+    }
+  }}
+
+POST /company/_search
+   {
+      "query":{
+        "bool":{
+          "must":[
+            {"term":{"sex":"男"}},
+            {"range":{
+              "age":{
+                "gte":10,
+                "lt":50
+              }
+            }}
+          ],
+          "must_not":[
+            {"term":{"sex":"女"}}
+          ],
+          "should":[
+            {"terms":{"id":[1,2,3,4,5,6,7,8]}},
+            {"match":{"position":"董"}}
+          ],
+          "filter":[
+            {"match":{"departments.keyword":"市场部"}}
+          ]
+        }
+      }
+    }
+
+GET custom/_search
+{
+  "query":
+  {
+    "range":
+    {
+      "年龄":
+      {
+        "gte":29,
+        "lte":20
+      }
+    }
+  }
+}
+
+GET custom/_search
+{
+    "query":
+      {
+        "term":
+        {
+          "name": "mike"
+        }
+      }
+}
+
+GET custom/_search
+{
+    "query":
+      {
+        "terms":
+        {
+          "name": ["mike", "mile", "kkk"]
+        }
+      }
+}
